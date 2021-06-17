@@ -1,0 +1,165 @@
+package objects;
+import java.awt.List;
+import java.util.ArrayList;
+
+import tests.User;
+
+public class ResponseData {
+	
+	private int page;
+	private ArrayList<User>AllUsers;
+	
+	public int getPage() {
+		return page;
+	}
+
+	public void setPageInfo(int page) {
+		this.page = page;
+	}
+	
+	public ArrayList<User> getAllUsers(){
+		return AllUsers;
+	}
+	
+	public void setAllUsers (ArrayList<User>AllUsers) {
+		this.AllUsers = AllUsers;
+	}
+}
+
+package tests;
+import java.awt.List;
+
+public class User {
+	
+	private int id;
+	private String email;
+	private String first_name;
+	private String last_name;
+	private String avatar;
+	
+	public User(int id, String email, String first_name, String last_name, String avatar) {
+	    this.id = id;
+	    this.email = email;
+	    this.first_name = first_name;
+	    this.last_name = last_name;
+	    this.avatar = avatar;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public void setId (int id) {
+		this.id = id;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail (String email) {
+		this.email = email;
+		
+	}
+	public String getFirst_name() {
+		return first_name;
+	}
+	public void setFirst_name (String first_name) {
+		this.first_name = first_name;
+	}
+	public String getLast_name() {
+		return last_name;
+	}
+	public void setLast_name (String last_name) {
+		this.last_name = last_name;
+	}
+	public String getAvatar() {
+		return avatar;
+	}
+	public void setAvatar (String avatar) {
+		this.avatar = avatar;
+	}
+	
+	@Override
+	public String toString() {
+		return "User{ " + "id = " + id + ", email = " + email + "\" +/" + first_name + "\" +" + "last_name = " + last_name + "\" "
+		+ "avatar = " + avatar + "\"" + "}";
+	}
+}
+package tests;
+import java.awt.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
+import javax.xml.registry.infomodel.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.omg.CORBA.portable.InputStream;
+
+public class GetAllUsersTest {
+	
+	HttpURLConnection connection;
+
+	public void httpsRequest() throws IOException {
+		URL url = new URL("https://reqres.in/api/users?page=2");
+		
+		connection = (HttpURLConnection)url.openConnection();
+			
+		connection.setRequestMethod("GET");
+		connection.connect();
+		
+		}
+	public JSONArray parseJson() throws IOException, JSONException {
+		JSONParser parse = new JSONParser();
+		InputStream inputStream = (InputStream) connection.getInputStream();
+		BufferedReader bR = new BufferedReader(new InputStreamReader(inputStream));
+		String line = "";
+		
+		StringBuilder responseStrBuilder = new StringBuilder();
+		while ((line=bR.readLine())!= null) {
+			responseStrBuilder.append(line);
+		}
+		inputStream.close();
+		
+		JSONObject result = new JSONObject(responseStrBuilder.toString());
+		JSONArray dataJsonArray = result.getJSONArray("data");
+		return dataJsonArray;
+		
+	}
+	public ArrayList<User> allusers(JSONArray dataJsonArray) throws JSONException {
+	    ArrayList<User> allusers = new ArrayList<User>();
+	    for(int i=0; i<dataJsonArray.length(); i++) {
+	        JSONObject dataObj = (JSONObject) dataJsonArray.get(i);
+	        int id = dataObj.getInt("id");
+	        String email = dataObj.getString("email");
+	        String firstName = dataObj.getString("first_name");
+	        String lastName = dataObj.getString("last_name");
+	        String avatar = dataObj.getString("avatar");
+	        User user = new User (id, email, firstName, lastName, avatar);
+	        allusers.add(user);
+	    }
+	    return allusers;
+	}
+	public void findUsersStartingWithF() throws IOException, JSONException {
+	    ArrayList<User> allusers = allusers(parseJson());
+	    for (int i=0; i<allusers.size(); i++) {
+	        if (allusers.get(i).getLast_name().startsWith("F")) {
+	            System.out.println(allusers.get(i).toString());
+	        }
+	    }
+	}
+
+}
+	 
+
+
+
+
+
+
+
