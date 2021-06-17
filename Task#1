@@ -1,0 +1,57 @@
+package objects;
+
+public class LogIn {
+	
+	public static final String URL = "https://the-internet.herokuapp.com/login";
+	public static final String USERNAME = "//*[@id=\"username\"]";
+	public static final String PASSWORD = "//*[@id=\"password\"]";
+	public static final String LOGINBTN = "//*[@id=\"login\"]/button/i";
+
+
+}
+
+package tests;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import objects.LogIn;
+
+public class LogInTest {
+	
+	public static WebDriver driver;
+
+	@BeforeClass
+	public void createDriver() {
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\Korisnik\\Desktop\\chromedriver\\chromedriver.exe");
+		driver = new ChromeDriver();
+	}
+	
+	@Test (priority = 1)
+	public void testLogIn() {
+		driver.get(LogIn.URL);
+		driver.findElement(By.xpath(LogIn.USERNAME)).sendKeys("tomsmith");
+		driver.findElement(By.xpath(LogIn.PASSWORD)).sendKeys("SuperSecretPassword!");
+		driver.findElement(By.xpath(LogIn.LOGINBTN)).click();
+		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	 @AfterClass
+		public void close() {
+			driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+			driver.close();
+		}
+}
